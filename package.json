@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://Kaplunivska.github.io/goit-react-hw-04-phonebook/",
   "dependencies": {
+    "@hookform/resolvers": "^2.9.10",
     "@styled-system/prop-types": "^5.1.5",
     "@testing-library/jest-dom": "^5.16.3",
     "@testing-library/react": "^12.1.4",
@@ -14,6 +15,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-hook-form": "^7.43.0",
     "react-icons": "^4.7.1",
     "react-scripts": "5.0.1",
     "react-toastify": "^9.1.1",

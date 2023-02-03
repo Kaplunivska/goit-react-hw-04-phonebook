@@ -1,10 +1,29 @@
 import FormInput from 'components/FormInput';
-import { Field, Form, Formik } from 'formik';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { object, string } from 'yup';
 import { StyledFormButton, StyledForm } from './ContactForm.styled';
 import { ContactFormPropTypes } from './ContactForm.type';
 
-const initialValue = { name: '', number: '' };
+const initialValues = { name: '', number: '' };
+const inputs = [
+  {
+    name: 'name',
+    type: 'text',
+    label: 'Name',
+    placeholder: 'Name',
+    title:
+      "Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan",
+  },
+  {
+    name: 'number',
+    type: 'tel',
+    label: 'Phone number',
+    placeholder: 'Phone number',
+    title:
+      'Phone number must be digits and can contain spaces, dashes, parentheses and can start with +',
+  },
+];
 const contactSchema = object({
   name: string()
     .min(3, ({ min }) => `Name must be at least ${min} characters`)
@@ -23,47 +42,47 @@ const contactSchema = object({
 });
 
 export default function ContactForm({ onSubmit }) {
-  const submitHandler = (values, actions) => {
-    onSubmit(values);
-    actions.resetForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty, isValid, isSubmitting, touchedFields },
+  } = useForm({
+    // Для того щоб, перевірка поля відбувалася при зміні значення поля.
+    mode: 'onChange',
+    defaultValues: initialValues,
+    resolver: yupResolver(contactSchema),
+  });
+
+  const submitHandler = (data, evt) => {
+    onSubmit(data);
+    reset();
   };
 
   return (
-    <Formik
-      initialValues={initialValue}
-      validationSchema={contactSchema}
-      onSubmit={submitHandler}
-    >
-      {({ isValid, isSubmitting, dirty }) => (
-        <StyledForm as={Form} autoComplete="off">
-          <Field
-            name="name"
-            type="text"
-            component={FormInput}
-            placeholder="Name"
-            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+    <StyledForm onSubmit={handleSubmit(submitHandler)} autoComplete="off">
+      {inputs.map(({ label, ...otherProps }) => {
+        const { name } = otherProps;
+        return (
+          <FormInput
+            key={name}
+            {...otherProps}
+            {...register(name)}
+            touched={touchedFields[name]}
+            error={errors[name]}
           >
-            Name
-          </Field>
-          <Field
-            type="tel"
-            name="number"
-            component={FormInput}
-            placeholder="Phone number"
-            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          >
-            Phone number
-          </Field>
+            {label}
+          </FormInput>
+        );
+      })}
 
-          <StyledFormButton
-            type="submit"
-            disabled={!(isValid && dirty) || isSubmitting}
-          >
-            Add contact
-          </StyledFormButton>
-        </StyledForm>
-      )}
-    </Formik>
+      <StyledFormButton
+        type="submit"
+        disabled={!(isValid && isDirty) || isSubmitting}
+      >
+        Add contact
+      </StyledFormButton>
+    </StyledForm>
   );
 }
 

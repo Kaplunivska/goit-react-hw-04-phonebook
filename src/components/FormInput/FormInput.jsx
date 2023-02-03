@@ -1,35 +1,19 @@
-import { ErrorMessage, getIn } from 'formik';
+import { forwardRef } from 'react';
 import {
   StyledErrorMessage,
   StyledFormInput,
   StyledFormLabel,
 } from './FormInput.styled';
 
-export default function FormInput({
-  children,
-  field,
-  form: { touched, errors },
-  ...props
-}) {
-  const checkIsValid = () => {
-    const message = getIn(errors, field.name);
+const FormInput = forwardRef(({ children, touched, error, ...props }, ref) => (
+  <StyledFormLabel>
+    {children}
+    <StyledFormInput {...props} isValid={!error} touched={touched} ref={ref} />
 
-    return !message;
-  };
+    {touched && error ? (
+      <StyledErrorMessage>{error.message}</StyledErrorMessage>
+    ) : null}
+  </StyledFormLabel>
+));
 
-  return (
-    <StyledFormLabel>
-      {children}
-      <StyledFormInput
-        {...field}
-        {...props}
-        isValid={checkIsValid()}
-        touched={touched[field.name]}
-      />
-
-      <StyledErrorMessage>
-        <ErrorMessage name={field.name} />
-      </StyledErrorMessage>
-    </StyledFormLabel>
-  );
-}
+export default FormInput;
