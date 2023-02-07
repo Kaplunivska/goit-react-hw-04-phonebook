@@ -31,7 +31,7 @@ export default function App() {
   }, [contacts]);
 
   const addContact = ({ name, number }) => {
-    const contact = contacts.find(contact => contact.name === name);
+    const contact = contacts.find(contact => contact.name.toLowerCase() === name.toLowerCase());
 
     // Show warrning if contact is already in contacts
     if (contact) {
